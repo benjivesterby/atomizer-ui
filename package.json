@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -24,6 +25,8 @@
     "tslib": "^1.10.0",
     "ajv": "6.10.0",
     "arrive": "2.4.1",
+    "body-parser": "^1.19.0",
+    "amqplib": "^0.5.5",
     "bootstrap": "4.3.1",
     "bootstrap-material-design": "4.1.2",
     "bootstrap-notify": "3.1.3",

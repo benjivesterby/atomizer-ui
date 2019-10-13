@@ -1,6 +1,13 @@
 <div class="main-content">
     <div class="container-fluid">
-        <p>Add Dashboard Content Here</p>
-        
+        <p>Test Rabbit Connection2</p>
+        <p>RabbitMQ Success: {{ messageResponse.success }}</p>
+        <div *ngIf="messageResponse.success; else elseBlock">
+            <p>RabbitMQ Message: {{ messageResponse.message }}</p>
+        </div>
+        <ng-template #elseBlock>
+            <p>RabbitMQ Error: {{ messageResponse.error }}</p>
+        </ng-template>
+
     </div>
-  </div>
+</div>

@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { RabbitmqService } from './shared/services/rabbitmq.service';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -17,9 +19,10 @@ import { NavbarComponent } from './navbar/navbar.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [RabbitmqService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
