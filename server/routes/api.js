@@ -1,5 +1,21 @@
 const express = require('express');
+const AMQPStats = require('amqp-stats');
 const router = express.Router();
+const atomizerAMQP = require('../controllers/atomizer-amqp');
+const uuidV1 = require('uuid/v1');
+
+
+//Start Atomizer AMQP instance
+atomizerAMQP.start();
+
+
+var stats = new AMQPStats({
+    username: "guest", // default: guest
+    password: "guest", // default: guest
+    hostname: "localhost:8080",  // default: localhost:55672
+    protocol: "http"  // default: http
+});
+
 
 
 /* GET api listing. */
@@ -7,56 +23,58 @@ router.get('/', (req, res) => {
     res.send('api works!');
 });
 
-/* GET RabbitMQ Satus. */
-router.get('/rabbit', (req, res) => {
-
-    var messageResponse = {
-        success: null,
-        error: null,
-        message: null
-    }
-
-    var amqp = require('amqplib/callback_api');
-
-    //Use Localhost if connecting outside of a container, 
-    //else use the container name [some-rabbit] for container to container communication 
-    amqp.connect('amqp://some-rabbit', function (error0, connection) {
-        if (error0) {
-            messageResponse.success = false;
-            messageResponse.error = error0;
-            res.json(status);
-            throw error0;
+/* GET RabbitMQ Aliveness. */
+router.get('/alive', (req, response) => {
+    stats.alive("/", function (err, res, data) {
+        if (err) {
+            response.send(err);
+            throw err;
         }
-        connection.createChannel(function (error1, channel) {
-            if (error1) {
-                throw error1;
-            }
-
-            var queue = 'hello';
-            var msg = 'Hello World!';
-
-            channel.assertQueue(queue, {
-                durable: false
-            });
-            channel.sendToQueue(queue, Buffer.from(msg));
-
-            console.log(" [x] Sent %s", msg);
-            messageResponse.success = true;
-            messageResponse.message = msg;
-            res.json(messageResponse);
-        });
-        setTimeout(function () {
-            connection.close();
-            //process.exit(0);
-        }, 500);
+        console.log('data: ', data);
+        response.send(data);
     });
+});
 
-
+/* GET RabbitMQ Overview. */
+router.get('/overview', (req, response) => {
+    stats.overview(function (err, res, data) {
+        if (err) {
+            response.send(err);
+            throw err;
+        }
+        console.log('data: ', data);
+        response.send(data);
+    });
 });
 
 
+/* GET test amqp-conn. */
+router.get('/test-amqp', (req, res) => {
+
+    //const atomizerAMQP = require('../controllers/atomizer-amqp');
+    //atomizerAMQP.start();
+
+    //test montecarlo
+    var msgMontecarlo = {
+        id: uuidV1(),
+        atomid: 'montecarlo',
+        payload: {
+            tosses: 10000
+        }
+    };
+
+    //test toss
+    var msgToss = {
+        id: uuidV1(),
+        atomid: 'toss',
+        payload: {}
+    };
 
 
+    atomizerAMQP.publish(msgMontecarlo, atomizerAMQP.KEY_PI_REQUEST, function (result) {
+        res.send(result);
+    })
+});
 
 
 /* Export Router */

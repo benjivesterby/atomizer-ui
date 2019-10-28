@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RabbitmqService } from '../shared/services/rabbitmq.service';
 import { IMessageResponse } from '../shared/models/messageResponse';
+import { IAlive } from '../shared/models/Alive';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,13 +11,15 @@ import { IMessageResponse } from '../shared/models/messageResponse';
 export class DashboardComponent implements OnInit {
 
   public messageResponse = {} as IMessageResponse;
+  public alive = {} as IAlive;
 
   constructor(private _rabbitmqService: RabbitmqService) { }
 
   ngOnInit() {
 
-    this._rabbitmqService.getStatus()
-      .subscribe(data => this.messageResponse = data);
+    //Test if RabbitMQ is alive
+    this._rabbitmqService.alive()
+      .subscribe(data => this.alive = data);
   }
 
 }

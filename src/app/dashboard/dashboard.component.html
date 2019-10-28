@@ -1,13 +1,79 @@
 <div class="main-content">
     <div class="container-fluid">
-        <p>Test Rabbit Connection2</p>
-        <p>RabbitMQ Success: {{ messageResponse.success }}</p>
-        <div *ngIf="messageResponse.success; else elseBlock">
-            <p>RabbitMQ Message: {{ messageResponse.message }}</p>
+        <!-- Status -->
+        <div class="row">
+            <!-- RabbitMQ Status -->
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="card-header card-header-light-blue card-header-icon">
+                        <div class="card-icon">
+                            <img src="../../assets/img/Rabbitmq_32.png" alt="RabbitMQ Logo">
+                        </div>
+                        <p class="card-category"></p>
+                        <h3 class="card-title">RabbitMQ
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <div *ngIf="alive.status === 'ok'; else elseBlock">
+                                <h4 class='text-success'>RabbitMQ is Online</h4>
+                            </div>
+                            <ng-template #elseBlock>
+                                <i class="material-icons text-danger">warning</i>
+                                <h4 class='text-danger'>RabbitMQ is Offline</h4>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Docker Status -->
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="card-header card-header-light-blue card-header-icon">
+                        <div class="card-icon">
+                            <img src="../../assets/img/Docker_32.png" alt="Docker Logo">
+                        </div>
+                        <p class="card-category"></p>
+                        <h3 class="card-title">Docker
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <div *ngIf="alive.status === 'ok'; else elseBlock">
+                                <h4 class='text-success'>Docker is Online</h4>
+                            </div>
+                            <ng-template #elseBlock>
+                                <i class="material-icons text-danger">warning</i>
+                                <h4 class='text-danger'>Docker is Offline</h4>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Atomizer Status -->
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="card-header card-header-light-blue card-header-icon">
+                        <div class="card-icon">
+                            <img src="../../assets/img/Atomizer_32.png" alt="Atomizer Logo">
+                        </div>
+                        <p class="card-category"></p>
+                        <h3 class="card-title">Atomizer
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <div *ngIf="alive.status === 'ok-remove'; else elseBlock">
+                                <h4 class='text-success'>Atomizer is Online</h4>
+                            </div>
+                            <ng-template #elseBlock>
+                                <i class="material-icons text-danger">warning</i>
+                                <h4 class='text-danger'>Atomizer is Offline</h4>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <ng-template #elseBlock>
-            <p>RabbitMQ Error: {{ messageResponse.error }}</p>
-        </ng-template>
-
     </div>
 </div>

@@ -211,6 +211,13 @@
       background: linear-gradient(60deg, $pink-400, $pink-600);
     }
 
+
+    .card-header-light-blue .card-icon,
+    .card-header-light-blue .card-text,
+    .card-header-light-blue:not(.card-header-icon):not(.card-header-text){
+      background: linear-gradient(60deg, $light-blue-100, $light-blue-300);
+    }
+
     .card-header-primary .card-icon,
     .card-header-primary:not(.card-header-icon):not(.card-header-text),
     .card-header-primary .card-text{
