@@ -1,6 +1,51 @@
 <div class="main-content">
     <div class="container-fluid">
-        <p>Add Atom Content Here</p>
-        
+        <!-- montecarlopi -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-atom-black">
+                        <h4 class="card-title">Monte Carlo Pi</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <input type="text" value="" placeholder="Number of Tosses" [formControl]="numTosses" />
+                                <button class="btn btn-info" (click)="atomizeMonte(numTosses.value)">Atomize</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="text-atom-black">RESULTS</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="card-content table-responsive table-full-width">
+                                <table class="table">
+                                    <thead class="text-atom-black">
+                                        <th>ID</th>
+                                        <th>AtomID</th>
+                                        <th>Tosses</th>
+                                        <th>Result</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let monte of montes">
+                                            <td>{{monte.id}}</td>
+                                            <td>{{monte.atomid}}</td>
+                                            <td>{{monte.payload.tosses}}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    <notifier-container></notifier-container>
+</div>

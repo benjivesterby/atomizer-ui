@@ -4,10 +4,10 @@ const router = express.Router();
 const atomizerAMQP = require('../controllers/atomizer-amqp');
 const uuidV1 = require('uuid/v1');
 
+var appid = uuidV1();
 
 //Start Atomizer AMQP instance
 atomizerAMQP.start();
-
 
 var stats = new AMQPStats({
     username: "guest", // default: guest
@@ -17,11 +17,16 @@ var stats = new AMQPStats({
 });
 
 
-
 /* GET api listing. */
 router.get('/', (req, res) => {
     res.send('api works!');
 });
+
+/* GET api listing. */
+router.get('/appid', (req, res) => {
+    res.send(JSON.stringify(appid));
+});
+
 
 /* GET RabbitMQ Aliveness. */
 router.get('/alive', (req, response) => {
@@ -30,7 +35,7 @@ router.get('/alive', (req, response) => {
             response.send(err);
             throw err;
         }
-        console.log('data: ', data);
+        console.log('[AMQP] Alive: ', data);
         response.send(data);
     });
 });
@@ -71,7 +76,7 @@ router.get('/test-amqp', (req, res) => {
     };
 
 
-    atomizerAMQP.publish(msgMontecarlo, atomizerAMQP.KEY_PI_REQUEST, function (result) {
+    atomizerAMQP.publish(msgMontecarlo, function (result) {
         res.send(result);
     })
 });
