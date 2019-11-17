@@ -6,13 +6,26 @@ const uuidV1 = require('uuid/v1');
 
 var appid = uuidV1();
 
+//Use Docker variable [should be some-rabbit] if available else,
+//Use Localhost if connecting outside of a container, 
+var rabbitHost = (process.env.RABBIT_NAME) ? process.env.RABBIT_NAME + ':15672' : 'localhost:8080';
+
+
+
+if (process.env.MYKEY) {
+    console.log('It is set!');
+}
+else {
+    console.log('No set!');
+}
+
 //Start Atomizer AMQP instance
 atomizerAMQP.start();
 
 var stats = new AMQPStats({
     username: "guest", // default: guest
     password: "guest", // default: guest
-    hostname: "localhost:8080",  // default: localhost:55672
+    hostname: rabbitHost,
     protocol: "http"  // default: http
 });
 

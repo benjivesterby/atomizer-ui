@@ -5,6 +5,10 @@ var atomizerChannel = null;
 var exchange = process.env.EXCHANGE || 'atomizer';
 var topic = process.env.TOPIC || 'electrons';
 
+//Use Docker variable [should be some-rabbit] if available else,
+//Use Localhost if connecting outside of a container, 
+var rabbitHost = (process.env.RABBIT_NAME) ? 'amqp://' + process.env.RABBIT_NAME : 'amqp://localhost';
+
 //Setup Event Emmiter
 var events = require('events');
 var em = new events.EventEmitter();
@@ -12,11 +16,9 @@ var em = new events.EventEmitter();
 
 exports.start = function () {
     //Create Connection
-    //Use Localhost if connecting outside of a container, 
-    //else use the container name [some-rabbit] for container to container communication 
-    amqp.connect('amqp://localhost', function (error1, conn) {
+    amqp.connect(rabbitHost, function (error1, conn) {
         if (error1) {
-            console.error("[AMQP2]", error1.message);
+            console.error("[AMQP]", error1.message);
             return setTimeout(start, 1000);
         }
         conn.on("error", function (error1) {
