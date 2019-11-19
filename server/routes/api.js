@@ -10,15 +10,6 @@ var appid = uuidV1();
 //Use Localhost if connecting outside of a container, 
 var rabbitHost = (process.env.RABBIT_NAME) ? process.env.RABBIT_NAME + ':15672' : 'localhost:8080';
 
-
-
-if (process.env.MYKEY) {
-    console.log('It is set!');
-}
-else {
-    console.log('No set!');
-}
-
 //Start Atomizer AMQP instance
 atomizerAMQP.start();
 
