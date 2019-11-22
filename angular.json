@@ -25,6 +25,9 @@
             ],
             "styles": [
               "node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
+              "node_modules/angular-notifier/styles/core.scss",
+              "node_modules/angular-notifier/styles/themes/theme-material.scss",
+              "node_modules/angular-notifier/styles/types/type-success.scss",
               "src/assets/scss/material-dashboard.scss"
             ],
             "scripts": []

@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { SocketioService } from '../shared/services/socketio.service';
+import { MonteCarloPI, Payload } from '../shared/models/monte-carlo-pi';
+import { v1 as uuid } from 'uuid';
+import { NotifierService } from "angular-notifier";
+import { ApiService } from '../shared/services/api.service';
+
 
 @Component({
   selector: 'app-atoms',
@@ -7,9 +14,44 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AtomsComponent implements OnInit {
 
-  constructor() { }
+  private readonly notifier: NotifierService;
+  numTosses = new FormControl('');
+  montes = [];
+  appid: string;
+
+  constructor(private socketService: SocketioService, notifierService: NotifierService, private _apiService: ApiService) {
+    this.notifier = notifierService;
+  }
 
   ngOnInit() {
+
+    //Get appid from api service
+    this._apiService.appid()
+      .subscribe(data => this.appid = data);
+
+    //Listen for atomizer responses and process messages
+    this.socketService
+      .getMessage()
+      .subscribe(msg => {
+        console.log('[Socket.io"] atomizer-response:', msg);
+
+        //parse string message as json
+        var obj = JSON.parse(msg);
+
+        if (obj.atomid = 'montecarlo') {
+          var monte = new MonteCarloPI(obj.senderid, obj.id, obj.atomid, new Payload(Number(obj.payload.tosses)))
+          this.montes.push(monte);
+        }
+      });
+  }
+
+  //Publish a MonteCarloPI Atomizer Object to RabbitMQ
+  atomizeMonte(tosses) {
+    //console.log(this.appid);
+    var monte = new MonteCarloPI(this.appid, uuid(), 'montecarlo', new Payload(parseInt(tosses)));
+    this.socketService.publishMessage(monte);
+    this.numTosses.setValue('');
+    this.notifier.notify("success", monte.atomid + " with ID: " + monte.id + " has been sent to the Atomizer!");
   }
 
 }

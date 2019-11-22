@@ -321,6 +321,8 @@ $gray:                   lighten($gray-base, 33.5%) !default; // #555
 $gray-light:             #999999 !default; // #999999
 $gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
 
+
 //Atomizer Colors
 $atom-black: #282828;
 $atom-black-lighter: lighten($atom-black, 20%) !default; // #eee;
+$atom-blue: #0691cb;

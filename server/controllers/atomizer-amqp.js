@@ -1,16 +1,22 @@
 // Access the callback-based API
 var amqp = require('amqplib/callback_api');
 var amqpConn = null;
-var exchange = 'atomizer';
 var atomizerChannel = null;
-exports.KEY_PI_REQUEST = 'atomizer.montecarlopi.request';
-const keys = [this.KEY_PI_REQUEST, 'atomizer.montecarlopi.result'];
+var exchange = process.env.EXCHANGE || 'atomizer';
+var topic = process.env.TOPIC || 'electrons';
+
+//Use Docker variable [should be some-rabbit] if available else,
+//Use Localhost if connecting outside of a container, 
+var rabbitHost = (process.env.RABBIT_NAME) ? 'amqp://' + process.env.RABBIT_NAME : 'amqp://localhost';
+
+//Setup Event Emmiter
+var events = require('events');
+var em = new events.EventEmitter();
+
 
 exports.start = function () {
     //Create Connection
-    //Use Localhost if connecting outside of a container, 
-    //else use the container name [some-rabbit] for container to container communication 
-    amqp.connect('amqp://some-rabbit', function (error1, conn) {
+    amqp.connect(rabbitHost, function (error1, conn) {
         if (error1) {
             console.error("[AMQP]", error1.message);
             return setTimeout(start, 1000);
@@ -48,15 +54,19 @@ exports.start = function () {
                     throw error;
                 }
 
-                console.log(' [AMQP] Waiting for atomizer messages.');
+                console.log('[AMQP] Waiting for atomizer messages.');
 
-                keys.forEach(function (key) {
-                    atomizerChannel.bindQueue(q.queue, exchange, key);
-                });
+                //keys.forEach(function (key) {
+                //  atomizerChannel.bindQueue(q.queue, exchange, key);
+                //});
+
+                //atomizerChannel.bindQueue(q.queue, exchange, topic); //Consume base topic
+                atomizerChannel.bindQueue(q.queue, exchange, topic + ".*"); //Consume all keys off of base topic
 
                 atomizerChannel.consume(q.queue, function (msg) {
-                    console.log(" [x] %s:'%s'", msg.fields.routingKey, msg.content.toString());
-                    //console.log(" [x] %s:'%s'", msg.fields.routingKey, JSON.parse(msg.content));
+                    console.log("[AMQP] Consume %s:'%s'", msg.fields.routingKey, msg.content.toString());
+                    //emit event so that server.js can listen to new messages coming in
+                    em.emit('AMQP-ConsumeEvent', msg.content.toString())
                 }, {
                     noAck: true
                 });
@@ -69,19 +79,24 @@ exports.start = function () {
 }
 
 
+/**
+ * Exports
+ */
+
 
 //Publish a message to Atomizer Channel
-exports.publish = function (msg, key, callback) {
+exports.publish = function (msg, callback) {
     try {
-        atomizerChannel.publish(exchange, key, Buffer.from(JSON.stringify(msg)));
-        console.log("[AMQP] Sent %s", msg);
-        callback('publish success: key ' + key);
+        atomizerChannel.publish(exchange, topic, Buffer.from(JSON.stringify(msg)));
+        console.log("[AMQP] Published %j", msg);
+        callback('success');
     } catch (e) {
         console.error("[AMQP] publish error:", e.message);
-        callback('publish error');
+        callback('error');
     }
 }
 
+exports.emmiter = em;
 
 
 
