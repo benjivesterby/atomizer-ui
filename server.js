@@ -4,13 +4,13 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 var bodyParser = require('body-parser');
-const atomizerAMQP = require('./server/controllers/atomizer-amqp');
-var em = atomizerAMQP.emmiter;
 
+const atomizerAMQP = require('./server/controllers/atomizer-amqp');
+atomizerAMQP.start();
+var em = atomizerAMQP.emmiter;
 
 //configure port
 var port = process.env.PORT || 3000;
-
 
 // Get our API routes
 const api = require('./server/routes/api');
@@ -41,9 +41,10 @@ io.on('connection', function (socket) {
 });
 
 //Subscribe to AMQP Consume Events, then emit with socket.io
-em.on('AMQP-ConsumeEvent', function (msg) {
-    console.log('[AMQP] Consumed: ' + msg);
+em.on('atomizer-response', function (msg) {
+    //console.log('[AMQP] Consumed: ' + msg);
     io.emit('atomizer-response', msg);
+    console.log('[Socket.io] Atomizer Response emitted: ' + msg);
     //io.emit('atomizer-response', JSON.stringify(msg));
 });
 

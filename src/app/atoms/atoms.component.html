@@ -25,16 +25,22 @@
                                 <table class="table">
                                     <thead class="text-atom-black">
                                         <th>ID</th>
-                                        <th>AtomID</th>
-                                        <th>Tosses</th>
-                                        <th>Result</th>
+                                        <th>ATOM ID</th>
+                                        <th>START TIME</th>
+                                        <th>END TIME</th>
+                                        <th>NUM TOSSES</th>
+                                        <th>TOSSES IN</th>
+                                        <th>PI</th>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let monte of montes">
-                                            <td>{{monte.id}}</td>
-                                            <td>{{monte.atomid}}</td>
-                                            <td>{{monte.payload.tosses}}</td>
-                                            <td></td>
+                                            <td>{{monte.electronId}}</td>
+                                            <td>{{monte.atomId}}</td>
+                                            <td>{{monte.starttime}}</td>
+                                            <td>{{monte.endtime}}</td>
+                                            <td>{{monte.result.tosses}}</td>
+                                            <td>{{monte.result.in}}</td>
+                                            <td>{{monte.result.pi}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
