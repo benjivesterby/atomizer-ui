@@ -1,22 +1,18 @@
 const express = require('express');
 const AMQPStats = require('amqp-stats');
 const router = express.Router();
-const atomizerAMQP = require('../controllers/atomizer-amqp');
-const uuidV1 = require('uuid/v1');
 
-var appid = uuidV1();
+//Set APPID
+var appid = process.env.APPID || '0f7827a0-0baa-11ea-a738-a707993eaee1';
 
 //Use Docker variable [should be some-rabbit] if available else,
 //Use Localhost if connecting outside of a container, 
 var rabbitHost = (process.env.RABBIT_NAME) ? process.env.RABBIT_NAME + ':15672' : 'localhost:8080';
 
-//Start Atomizer AMQP instance
-atomizerAMQP.start();
-
 var stats = new AMQPStats({
     username: "guest", // default: guest
     password: "guest", // default: guest
-    hostname: rabbitHost,
+    hostname: rabbitHost,  // default: localhost:55672
     protocol: "http"  // default: http
 });
 
@@ -54,35 +50,6 @@ router.get('/overview', (req, response) => {
         console.log('data: ', data);
         response.send(data);
     });
-});
-
-
-/* GET test amqp-conn. */
-router.get('/test-amqp', (req, res) => {
-
-    //const atomizerAMQP = require('../controllers/atomizer-amqp');
-    //atomizerAMQP.start();
-
-    //test montecarlo
-    var msgMontecarlo = {
-        id: uuidV1(),
-        atomid: 'montecarlo',
-        payload: {
-            tosses: 10000
-        }
-    };
-
-    //test toss
-    var msgToss = {
-        id: uuidV1(),
-        atomid: 'toss',
-        payload: {}
-    };
-
-
-    atomizerAMQP.publish(msgMontecarlo, function (result) {
-        res.send(result);
-    })
 });
 
 

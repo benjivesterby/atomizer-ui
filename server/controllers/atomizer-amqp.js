@@ -1,9 +1,8 @@
-// Access the callback-based API
 var amqp = require('amqplib/callback_api');
 var amqpConn = null;
 var atomizerChannel = null;
-var exchange = process.env.EXCHANGE || 'atomizer';
-var topic = process.env.TOPIC || 'electrons';
+var publishQueue = process.env.QUEUE || 'atomizer';
+var appid = process.env.APPID || '0f7827a0-0baa-11ea-a738-a707993eaee1';
 
 //Use Docker variable [should be some-rabbit] if available else,
 //Use Localhost if connecting outside of a container, 
@@ -15,79 +14,63 @@ var em = new events.EventEmitter();
 
 
 exports.start = function () {
+
     //Create Connection
-    amqp.connect(rabbitHost, function (error1, conn) {
-        if (error1) {
-            console.error("[AMQP]", error1.message);
-            return setTimeout(start, 1000);
+    amqp.connect(rabbitHost, function (error0, connection) {
+        if (error0) {
+            console.error("[AMQP]", error0.message);
+            throw error0;
         }
-        conn.on("error", function (error1) {
-            if (error1.message !== "Connection closing") {
-                console.error("[AMQP] conn error", error1.message);
-            }
-        });
-        conn.on("close", function () {
-            console.error("[AMQP] reconnecting");
-            return setTimeout(start, 1000);
-        });
+
         console.log("[AMQP] connected");
-        amqpConn = conn;
+        amqpConn = connection;
 
         //Create Channel
-        amqpConn.createChannel(function (error2, channel) {
-            if (error2) {
-                throw error2;
+        amqpConn.createChannel(function (error1, channel) {
+            if (error1) {
+                console.error("[AMQP]", error1.message);
+                throw error1;
             }
 
-            channel.assertExchange(exchange, 'topic', {
-                durable: false
-            });
-
             atomizerChannel = channel;
+
             console.log("[AMQP] Atomizer Channel Created");
 
-            //Start Consumer
-            atomizerChannel.assertQueue('', {
-                exclusive: true
-            }, function (error, q) {
-                if (error) {
-                    throw error;
-                }
-
-                console.log('[AMQP] Waiting for atomizer messages.');
-
-                //keys.forEach(function (key) {
-                //  atomizerChannel.bindQueue(q.queue, exchange, key);
-                //});
-
-                //atomizerChannel.bindQueue(q.queue, exchange, topic); //Consume base topic
-                atomizerChannel.bindQueue(q.queue, exchange, topic + ".*"); //Consume all keys off of base topic
-
-                atomizerChannel.consume(q.queue, function (msg) {
-                    console.log("[AMQP] Consume %s:'%s'", msg.fields.routingKey, msg.content.toString());
-                    //emit event so that server.js can listen to new messages coming in
-                    em.emit('AMQP-ConsumeEvent', msg.content.toString())
-                }, {
-                    noAck: true
-                });
-
+            //Setup Queues if they don't already exist in RabbitMQ
+            atomizerChannel.assertQueue(publishQueue, {
+                durable: true
             });
 
-        })
+            atomizerChannel.assertQueue(appid, {
+                durable: true
+            });
 
+            console.log("[AMAP] Atomizer Queues Created");
+
+
+            //Start Consumer
+            channel.consume(appid, function (msg) {
+                console.log("[AMAP] Received %s", msg.content.toString());
+                //emit event so that server.js can listen to new messages coming in
+                em.emit('atomizer-response', msg.content.toString())
+            }, {
+                noAck: true
+            });
+
+            console.log("[AMAP] Consumer started");
+            console.log("[AMQP] Waiting for messages in queue %s. ", appid);
+
+        });
     });
 }
-
-
-/**
- * Exports
- */
 
 
 //Publish a message to Atomizer Channel
 exports.publish = function (msg, callback) {
     try {
-        atomizerChannel.publish(exchange, topic, Buffer.from(JSON.stringify(msg)));
+        atomizerChannel.sendToQueue(publishQueue, Buffer.from(JSON.stringify(msg)));
+
+        //atomizerChannel.publish(exchange, topic, Buffer.from(JSON.stringify(msg)));
         console.log("[AMQP] Published %j", msg);
         callback('success');
     } catch (e) {
@@ -97,14 +80,3 @@ exports.publish = function (msg, callback) {
 }
 
 exports.emmiter = em;
-
-
-
-
-
-
-
-
-
-
-

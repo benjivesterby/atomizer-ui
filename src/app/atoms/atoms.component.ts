@@ -34,14 +34,7 @@ export class AtomsComponent implements OnInit {
       .getMessage()
       .subscribe(msg => {
         console.log('[Socket.io"] atomizer-response:', msg);
-
-        //parse string message as json
-        var obj = JSON.parse(msg);
-
-        if (obj.atomid = 'montecarlo') {
-          var monte = new MonteCarloPI(obj.senderid, obj.id, obj.atomid, new Payload(Number(obj.payload.tosses)))
-          this.montes.push(monte);
-        }
+        this.montes.push(JSON.parse(msg));
       });
   }
 
