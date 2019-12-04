@@ -63,7 +63,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <div *ngIf="alive.status === 'ok-remove'; else elseBlock">
+                            <div *ngIf="rabbitAlive.status === 'ok'; else elseBlock">
                                 <h4 class='text-success'>Atomizer is Online</h4>
                             </div>
                             <ng-template #elseBlock>

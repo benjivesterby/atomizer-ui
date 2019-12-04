@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SocketioService } from '../shared/services/socketio.service';
 import { MonteCarloPI, Payload } from '../shared/models/monte-carlo-pi';
 import { v1 as uuid } from 'uuid';
@@ -14,15 +14,24 @@ import { ApiService } from '../shared/services/api.service';
 })
 export class AtomsComponent implements OnInit {
 
-  private readonly notifier: NotifierService;
-  numTosses = new FormControl('');
+  //Vars
   montes = [];
   appid: string;
 
+  //Form Controls
+  numTosses = new FormControl('', Validators.compose(
+    [Validators.min(1), Validators.max(2000), Validators.required, Validators.pattern("^[0-9]*$")]
+  ));
+
+  //Notifier Service
+  private readonly notifier: NotifierService;
+
+  //Constructor
   constructor(private socketService: SocketioService, notifierService: NotifierService, private _apiService: ApiService) {
     this.notifier = notifierService;
   }
 
+  //On Init
   ngOnInit() {
 
     //Get appid from api service
