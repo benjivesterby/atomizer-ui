@@ -11,8 +11,18 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <input type="text" value="" placeholder="Number of Tosses" [formControl]="numTosses" />
-                                <button class="btn btn-info" (click)="atomizeMonte(numTosses.value)">Atomize</button>
+                                <input placeholder="Number of Tosses" [formControl]="numTosses" />
+
+
+                                <button class="btn btn-info" [disabled]="numTosses.invalid"
+                                    (click)="atomizeMonte(numTosses.value)">Atomize</button>
+
+                                <div *ngIf="numTosses.invalid && numTosses.dirty">
+                                    <p class="text-danger">Tosses must be numeric and between 1 and 2000 (There is a
+                                        know bug over 2000 tosses)</p>
+                                </div>
+
+
                             </div>
                         </div>
                         <div class="row">
