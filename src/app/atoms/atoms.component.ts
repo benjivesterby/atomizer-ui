@@ -50,7 +50,7 @@ export class AtomsComponent implements OnInit {
   //Publish a MonteCarloPI Atomizer Object to RabbitMQ
   atomizeMonte(tosses) {
     //console.log(this.appid);
-    var monte = new MonteCarloPI(this.appid, uuid(), 'montecarlo', new Payload(parseInt(tosses)));
+    var monte = new MonteCarloPI(this.appid, uuid(), 'montecarlopi.MonteCarlo', new Payload(parseInt(tosses)));
     this.socketService.publishMessage(monte);
     this.numTosses.setValue('');
     this.notifier.notify("success", monte.atomid + " with ID: " + monte.id + " has been sent to the Atomizer!");
