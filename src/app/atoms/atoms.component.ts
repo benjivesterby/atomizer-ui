@@ -20,7 +20,7 @@ export class AtomsComponent implements OnInit {
 
   //Form Controls
   numTosses = new FormControl('', Validators.compose(
-    [Validators.min(1), Validators.max(2000), Validators.required, Validators.pattern("^[0-9]*$")]
+    [Validators.min(1), Validators.required, Validators.pattern("^[0-9]*$")]
   ));
 
   //Notifier Service
