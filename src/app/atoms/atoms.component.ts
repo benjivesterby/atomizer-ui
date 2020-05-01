@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SocketioService } from '../shared/services/socketio.service';
 import { MonteCarloPI, Payload } from '../shared/models/monte-carlo-pi';
-import { v1 as uuid } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { NotifierService } from "angular-notifier";
 import { ApiService } from '../shared/services/api.service';
 
@@ -50,7 +50,7 @@ export class AtomsComponent implements OnInit {
   //Publish a MonteCarloPI Atomizer Object to RabbitMQ
   atomizeMonte(tosses) {
     //console.log(this.appid);
-    var monte = new MonteCarloPI(this.appid, uuid(), 'montecarlopi.MonteCarlo', new Payload(parseInt(tosses)));
+    var monte = new MonteCarloPI(this.appid, uuidv4(), 'montecarlopi.MonteCarlo', new Payload(parseInt(tosses)));
     this.socketService.publishMessage(monte);
     this.numTosses.setValue('');
     this.notifier.notify("success", monte.atomid + " with ID: " + monte.id + " has been sent to the Atomizer!");
