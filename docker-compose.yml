@@ -2,7 +2,10 @@ version: '2.1'
 
 services:
         atomizer-ui:
-                build: .
+                build:
+                        context: .
+                        dockerfile: Dockerfile
+                image: atomizer-test-ui
                 ports:
                         - 3000:3000
                 depends_on:
@@ -14,8 +17,10 @@ services:
                         - RABBIT_NAME=atomrabbit
                         - QUEUE=atomizer
                         - APPID=0f7827a0-0baa-11ea-a738-a707993eaee1
+                          #command: ./wait-for.sh --timeout=30 atomrabbit:5672 -- node /app/server.js
         rabbit-mq:
                 image: 'rabbitmq:3-management'
+                container_name: atomrabbit
                 hostname: atomrabbit
                 ports:
                         - 8080:15672
