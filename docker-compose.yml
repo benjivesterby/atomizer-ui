@@ -1,8 +1,43 @@
 version: '2.1'
 
 services:
-  atomizer-ui:
-    image: atomizer-ui
-    build: .
-    ports:
-      - 80:80
+        atomizer-ui:
+                build: .
+                ports:
+                        - 3000:3000
+                depends_on:
+                        - "rabbit-mq"
+                        - "atomizer-node1"
+                        - "atomizer-node2"
+                        - "atomizer-node3"
+                environment:
+                        - RABBIT_NAME=atomrabbit
+                        - QUEUE=atomizer
+                        - APPID=0f7827a0-0baa-11ea-a738-a707993eaee1
+        rabbit-mq:
+                image: 'rabbitmq:3-management'
+                hostname: atomrabbit
+                ports:
+                        - 8080:15672
+                        - 5672:5672
+        atomizer-node1:
+                image: 'devnw/atomizer-test:latest'
+                depends_on:
+                        - "rabbit-mq"
+                environment:
+                        - CONNECTIONSTRING=amqp://guest:guest@atomrabbit:5672/
+                        - QUEUE=atomizer
+        atomizer-node2:
+                image: 'devnw/atomizer-test:latest'
+                depends_on:
+                        - "rabbit-mq"
+                environment:
+                        - CONNECTIONSTRING=amqp://guest:guest@atomrabbit:5672/
+                        - QUEUE=atomizer
+        atomizer-node3:
+                image: 'devnw/atomizer-test:latest'
+                depends_on:
+                        - "rabbit-mq"
+                environment:
+                        - CONNECTIONSTRING=amqp://guest:guest@atomrabbit:5672/
+                        - QUEUE=atomizer
