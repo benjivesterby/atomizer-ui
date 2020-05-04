@@ -45,7 +45,7 @@
     "node-docker-api": "^1.1.22",
     "perfect-scrollbar": "1.5.0",
     "popper.js": "1.16.1",
-    "qs": "^6.9.3",
+    "qs": "^6.9.4",
     "rxjs": "~6.5.5",
     "rxjs-compat": "6.5.5",
     "socket.io": "^2.3.0",
