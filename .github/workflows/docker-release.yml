@@ -3,7 +3,7 @@ name: Docker - Deploy Release
 on:
   push:
     tags:
-    - 'v.*'
+    - '*'
   release:
     types: [published, created, edited]
 
