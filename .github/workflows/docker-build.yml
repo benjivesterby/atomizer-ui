@@ -1,10 +1,7 @@
-name: Docker 
+name: Docker - Deploy Latest 
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
